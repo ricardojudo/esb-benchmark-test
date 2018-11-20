@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Deploy EC2 instances
+
+Resources:
+
+  Ec2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-061e7ebbc234015fe
+      InstanceType: t3.large
+      KeyName: ebs-bm
+      SubnetId: 
+        Fn::ImportValue: ebs-benchmark-PublicSubnet1
+      SecurityGroupIds:
+      - !Ref InstanceSecurityGroup
+  InstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable SSH access via port 22
+      VpcId: 
+        Fn::ImportValue: ebs-benchmark-VPC
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+  Disk1:
+    Type: AWS::EC2::Volume
+    Properties:
+      Size: 20
+      AvailabilityZone: !GetAtt Ec2Instance.AvailabilityZone
+  MountPoint1:
+    Type: AWS::EC2::VolumeAttachment
+    Properties:
+      InstanceId: !Ref Ec2Instance
+      VolumeId: !Ref Disk1
+      Device: /dev/sdf
+  Disk2:
+    Type: AWS::EC2::Volume
+    Properties:
+      Size: 20
+      AvailabilityZone: !GetAtt Ec2Instance.AvailabilityZone
+  MountPoint2:
+    Type: AWS::EC2::VolumeAttachment
+    Properties:
+      InstanceId: !Ref Ec2Instance
+      VolumeId: !Ref Disk2
+      Device: /dev/sdg
+  Disk3:
+    Type: AWS::EC2::Volume
+    Properties:
+      Size: 20
+      AvailabilityZone: !GetAtt Ec2Instance.AvailabilityZone
+  MountPoint3:
+    Type: AWS::EC2::VolumeAttachment
+    Properties:
+      InstanceId: !Ref Ec2Instance
+      VolumeId: !Ref Disk3
+      Device: /dev/sdh
+      
+
+
+
